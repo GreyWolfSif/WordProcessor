@@ -12,7 +12,6 @@ bool MyApp::OnInit()
     }
 
     MyFrame* frame = new MyFrame(wxT("My Application"));
-
     frame->Show(true);
 
     return true;

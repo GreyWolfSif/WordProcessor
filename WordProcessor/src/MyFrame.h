@@ -1,4 +1,6 @@
 #include "wx/wx.h"
+#include "wx/wfstream.h"
+#include "wx/txtstrm.h"
 
 #ifndef MYFRAME_H
 #define MYFRAME_H
@@ -6,6 +8,15 @@ class MyFrame : public wxFrame
 {
 public:
     MyFrame(const wxString& title);
+
+    //menus
+    wxMenuBar* menuBar;
+    wxMenu* fileMenu;
+    wxMenu* helpMenu;
+
+    //widgets
+    wxButton* button;
+    wxTextCtrl* control;
 
     //events
     void OnOpenFile(wxCommandEvent& event);

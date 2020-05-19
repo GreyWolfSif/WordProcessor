@@ -1,6 +1,7 @@
 #include "MyFrame.h"
 #include "MyTextCtrl.h"
 
+//The event lookup table
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 EVT_MENU(wxID_OPEN, MyFrame::OnOpenFile)
 EVT_MENU(wxID_SAVE, MyFrame::OnSave)
@@ -11,45 +12,73 @@ EVT_BUTTON(wxID_OK, MyFrame::OnButtonOK)
 EVT_CHAR(MyFrame::OnKeyDown)
 END_EVENT_TABLE()
 
-MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
+void InitializeMenu(wxMenu* fileMenu, wxMenu* helpMenu, wxMenuBar* menuBar)
 {
-    SetSize(wxSize(1000, 1000));
-    SetIcon(wxICON(sample));
-
-    wxMenu* fileMenu = new wxMenu();
-    wxMenu* helpMenu = new wxMenu();
-
+    //appends menu option to the dropdown menu and connects event handlers
     helpMenu->Append(wxID_ABOUT, "&About\tF1", "Show about dialog");
 
     fileMenu->Append(wxID_OPEN, "&Open\tNot Done", "Open file on computer");
     fileMenu->Append(wxID_SAVE, "&Save\tCtrl-S", "Save your progress");
     fileMenu->Append(wxID_EXIT, "&Exit\tAlt-X", "Quit this program");
 
-    wxMenuBar* menuBar = new wxMenuBar();
+    //places dropdown menus onto the menu bar
     menuBar->Append(fileMenu, "&File");
     menuBar->Append(helpMenu, "&Help");
+}
+
+void InitializeStatusBar(MyFrame* frame)
+{
+    frame->CreateStatusBar(2);
+    frame->SetStatusText("Welcome to wxWidgets!");
+    frame->SetStatusText("Some more information...", 1);
+}
+
+MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
+{
+    SetSize(wxSize(1920, 1080));
+    SetIcon(wxICON(sample));
+
+    menuBar = new wxMenuBar();
+    fileMenu = new wxMenu();
+    helpMenu = new wxMenu();
+
+    InitializeMenu(fileMenu, helpMenu, menuBar);
     SetMenuBar(menuBar);
 
-    CreateStatusBar(2);
-    SetStatusText("Welcome to wxWidgets!");
-    SetStatusText("Some more information...", 1);
+    InitializeStatusBar(this);
 
-    wxButton* button = new wxButton(this, wxID_OK, wxT("OK"), wxPoint(50, 50));
-
-    wxTextCtrl* control = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(0, 0), wxSize(900, 900));
+    //initialize widgets
+    control = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(0, 0), wxSize(500, 400));
 
 }
+
+//EVENT HANDLERS
 
 void MyFrame::OnOpenFile(wxCommandEvent& event)
 {
-    wxString file = wxFileSelector("Choose a file to open", wxEmptyString, wxEmptyString, "txt");
-    if (!file.IsEmpty())
+    wxFileDialog openFileDialog(this, "Open existing file", "", "", "Text files (*.txt)|*.txt", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (openFileDialog.ShowModal() == wxID_CANCEL)
     {
-        //TODO
+        return;
+    }
+
+    wxFileInputStream inputStream(openFileDialog.GetPath());
+    wxTextInputStream textStream(inputStream, wxT("\x09"), wxConvUTF8);
+    if (!inputStream.IsOk())
+    {
+        wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
+        return;
+    }
+    
+    wxString line;
+    while (inputStream.IsOk() && !inputStream.Eof())
+    {
+        line = textStream.ReadLine();
+        control->AppendText(line);
+        control->AppendText(wxT('\n'));
     }
 }
 
-// event handlers
 void MyFrame::OnSave(wxCommandEvent& event)
 {
     //TODO
