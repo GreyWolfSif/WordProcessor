@@ -4,7 +4,7 @@
 //The event lookup table
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
 EVT_MENU(wxID_OPEN, MyFrame::OnOpenFile)
-EVT_MENU(wxID_SAVE, MyFrame::OnSave)
+EVT_MENU(wxID_SAVE, MyFrame::OnSaveAs)
 EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
 EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
 EVT_SIZE(MyFrame::OnSize)
@@ -54,39 +54,49 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 
 //EVENT HANDLERS
 
+bool fileDialogIsOpen(MyFrame* frame, wxFileDialog* fileDialog)
+{
+    if (fileDialog->ShowModal() == wxID_CANCEL)
+    {
+        return false;
+    }
+    return true;
+}
+
 void MyFrame::OnOpenFile(wxCommandEvent& event)
 {
-    wxFileDialog openFileDialog(this, "Open existing file", "", "", "Text files (*.txt)|*.txt", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
-    if (openFileDialog.ShowModal() == wxID_CANCEL)
+    wxFileDialog* fileDialog = new wxFileDialog(this, "Open File", wxEmptyString, wxEmptyString, "Text files (*.txt)|*.txt", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (fileDialogIsOpen(this, fileDialog))
     {
-        return;
-    }
+        wxFileInputStream inputStream(fileDialog->GetPath());
+        wxTextInputStream textStream(inputStream, wxT("\x09"), wxConvUTF8);
+        if (!inputStream.IsOk())
+        {
+            wxLogError("Cannot open file '%s'.", fileDialog->GetPath());
+            return;
+        }
 
-    wxFileInputStream inputStream(openFileDialog.GetPath());
-    wxTextInputStream textStream(inputStream, wxT("\x09"), wxConvUTF8);
-    if (!inputStream.IsOk())
-    {
-        wxLogError("Cannot open file '%s'.", openFileDialog.GetPath());
-        return;
-    }
-    
-    wxString line;
-    while (inputStream.IsOk() && !inputStream.Eof())
-    {
-        line = textStream.ReadLine();
-        control->AppendText(line);
-        control->AppendText(wxT('\n'));
+        wxString line;
+        while (inputStream.IsOk() && !inputStream.Eof())
+        {
+            line = textStream.ReadLine();
+            control->AppendText(line);
+            control->AppendText(wxT('\n'));
+        }
     }
 }
 
-void MyFrame::OnSave(wxCommandEvent& event)
+void MyFrame::OnSaveAs(wxCommandEvent& event)
 {
-    //TODO
+    wxFileDialog* fileDialog = new wxFileDialog(this, "Save File", wxEmptyString, wxEmptyString, wxEmptyString, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    if (fileDialogIsOpen(this, fileDialog))
+    {
+        wxFileOutputStream outputStream();
+    }
 }
 
 void MyFrame::OnQuit(wxCommandEvent& event)
 {
-    //Destroy the frame
     Close();
 }
 

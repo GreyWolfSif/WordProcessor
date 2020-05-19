@@ -20,7 +20,7 @@ public:
 
     //events
     void OnOpenFile(wxCommandEvent& event);
-    void OnSave(wxCommandEvent& event);
+    void OnSaveAs(wxCommandEvent& event);
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnSize(wxSizeEvent& event);
