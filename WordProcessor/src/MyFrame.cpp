@@ -29,13 +29,12 @@ void InitializeMenu(wxMenu* fileMenu, wxMenu* helpMenu, wxMenuBar* menuBar)
 void InitializeStatusBar(MyFrame* frame)
 {
     frame->CreateStatusBar(2);
-    frame->SetStatusText("Welcome to wxWidgets!");
-    frame->SetStatusText("Some more information...", 1);
+    frame->SetStatusText("");
+    frame->SetStatusText("", 1);
 }
 
-MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
+MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxPoint(50, 50), wxSize(900, 600))
 {
-    SetSize(wxSize(1920, 1080));
     SetIcon(wxICON(sample));
 
     menuBar = new wxMenuBar();
@@ -47,9 +46,19 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title)
 
     InitializeStatusBar(this);
 
-    //initialize widgets
-    control = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxPoint(0, 0), wxSize(500, 400));
+    control = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(300, 300), wxTE_MULTILINE);
 
+    sizer = new wxBoxSizer(wxVERTICAL);
+    sizer->Add(control, 1, wxEXPAND, wxALL);
+    
+    SetSizer(sizer);
+    sizer->Fit(this);
+    sizer->SetSizeHints(this);
+}
+
+MyFrame::~MyFrame()
+{
+    delete[] control;
 }
 
 //EVENT HANDLERS
@@ -91,13 +100,13 @@ void MyFrame::OnSaveAs(wxCommandEvent& event)
     wxFileDialog* fileDialog = new wxFileDialog(this, "Save File", wxEmptyString, wxEmptyString, wxEmptyString, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (fileDialogIsOpen(this, fileDialog))
     {
-        wxFileOutputStream outputStream();
+        //TODO
     }
 }
 
 void MyFrame::OnQuit(wxCommandEvent& event)
 {
-    Close();
+    wxExit();
 }
 
 void MyFrame::OnAbout(wxCommandEvent& event)
@@ -107,9 +116,9 @@ void MyFrame::OnAbout(wxCommandEvent& event)
     wxMessageBox(msg, wxT("About Minimal"), wxOK | wxICON_INFORMATION, this);
 }
 
-void MyFrame::OnSize(wxSizeEvent& event)
+void MyFrame::OnResize(wxSizeEvent& event)
 {
-
+    
 }
 
 void MyFrame::OnButtonOK(wxCommandEvent& event)
@@ -127,7 +136,7 @@ void MyFrame::OnKeyDown(wxKeyEvent& event)
         int answer = wxMessageBox("Quit program?", "Confirm", wxYES_NO);
         if (answer == wxYES)
         {
-            Close();
+            wxExit();
         }
     }
     else

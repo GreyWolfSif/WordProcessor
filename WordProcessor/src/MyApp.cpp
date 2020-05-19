@@ -11,7 +11,7 @@ bool MyApp::OnInit()
         return false;
     }
 
-    MyFrame* frame = new MyFrame(wxT("My Application"));
+    MyFrame* frame = new MyFrame(wxT("Notepad"));
     frame->Show(true);
 
     return true;

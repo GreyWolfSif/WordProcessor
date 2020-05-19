@@ -8,22 +8,25 @@ class MyFrame : public wxFrame
 {
 public:
     MyFrame(const wxString& title);
-
+    ~MyFrame();
     //menus
     wxMenuBar* menuBar;
     wxMenu* fileMenu;
     wxMenu* helpMenu;
 
     //widgets
-    wxButton* button;
     wxTextCtrl* control;
+    wxButton* button;
+
+    //sizer (alignes all the widgets)
+    wxBoxSizer* sizer;
 
     //events
     void OnOpenFile(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
-    void OnSize(wxSizeEvent& event);
+    void OnResize(wxSizeEvent& event);
     void OnButtonOK(wxCommandEvent& event);
     void OnKeyDown(wxKeyEvent& event);
 
