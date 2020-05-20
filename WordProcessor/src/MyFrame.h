@@ -1,9 +1,14 @@
+#ifndef MYFRAME_H
+#define MYFRAME_H
+
 #include "wx/wx.h"
 #include "wx/wfstream.h"
 #include "wx/txtstrm.h"
+#include "ControlParser.h"
 
-#ifndef MYFRAME_H
-#define MYFRAME_H
+#include <iostream>
+#include <vector>
+
 class MyFrame : public wxFrame
 {
 public:

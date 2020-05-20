@@ -147,8 +147,8 @@
     <ClCompile Include="src\MyFrame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ControlParser.h" />
     <ClInclude Include="src\MyFrame.h" />
-    <ClInclude Include="src\Finder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

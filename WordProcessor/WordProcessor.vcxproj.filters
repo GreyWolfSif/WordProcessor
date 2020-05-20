@@ -29,7 +29,7 @@
     <ClInclude Include="src\MyFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Finder.h">
+    <ClInclude Include="src\ControlParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

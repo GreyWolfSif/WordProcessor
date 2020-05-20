@@ -1,5 +1,4 @@
 #include "MyFrame.h"
-#include "Finder.h"
 
 //The event lookup table
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
@@ -118,7 +117,20 @@ void MyFrame::OnSaveAs(wxCommandEvent& event)
 
 void MyFrame::OnFind(wxCommandEvent& event)
 {
-    //TODO
+    wxTextEntryDialog textEntryDialog(this, "Find");
+    textEntryDialog.SetTextValidator(wxFILTER_ALPHA);
+    if (textEntryDialog.ShowModal() == wxID_OK)
+    {
+        wxString text = "";
+        for (int i = 0; i < control->GetNumberOfLines(); i++)
+        {
+            wxString lineText = control->GetLineText(i);
+            text.append(lineText);
+        }
+        ControlParser parser(text);
+        wxString pattern = textEntryDialog.GetValue();
+        parser.Search(pattern);
+    }
 }
 
 void MyFrame::OnQuit(wxCommandEvent& event)
@@ -151,8 +163,27 @@ void MyFrame::OnPersonalize(wxCommandEvent& event)
     }
     
     //Updates text buffer
-    wxString labelText = control->GetLabelText();
-    control->SetLabelText(labelText);
+
+    //copy lines from control to a vector
+    std::vector<wxString> lines;
+    for (int i = 0; i < control->GetNumberOfLines(); i++)
+    {
+        wxString lineText = control->GetLineText(i);
+        lines.push_back(lineText);
+    }
+
+    //clear the control's text
+    control->Clear();
+
+    //copy lines back from vector to the control
+    for (int i = 0; i < lines.size(); i++)
+    {
+        control->AppendText(lines[i]);
+        if (i != lines.size() - 1)
+        {
+            control->AppendText('\n');
+        }
+    }
 }
 
 //Resizes the frame

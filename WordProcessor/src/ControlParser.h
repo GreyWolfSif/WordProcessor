@@ -1,18 +1,22 @@
+#ifndef CONTROLPARSER_H
+#define CONTROLPARSER_H
+
 #include "wx/wx.h"
 
-#ifndef FINDER_H
-#define FINDER_H
-class Finder
+#include <iostream>
+#include <string>
+
+class ControlParser
 {
 private:
-	int* GenerateFailureArray(std::string pattern)
-	{
-		const int length = pattern.length();
-		int* failure = new int[length];
+	wxString text;
 
+	int* GenerateFailureArray(const wxString& pattern)
+	{
+		const size_t length = pattern.Length();
+		int* failure = new int[length];
 		int i = 0;
 		int j = 1;
-
 		failure[0] = 0;
 
 		while (j < length)
@@ -40,26 +44,30 @@ private:
 	}
 
 public:
-	void Search(std::string text, std::string pattern)
+	ControlParser(const wxString& text) {
+		this->text = text;
+	};
+
+	void Search(const wxString& pattern)
 	{
 		int i = 0;
 		int j = 0;
-
 		int* failure = GenerateFailureArray(pattern);
 
-		while (j < text.length())
+		while (j < text.Length())
 		{
 			if (text[j] == pattern[i])
 			{
 				i++;
 				j++;
 			}
-			if (i == pattern.length())
+			if (i == pattern.Length())
 			{
-				std::cout << "Pattern found from " << (j - i) << " to " << j << '\n';
+				wxString output = "Pattern found from " + std::to_string(j - i) + " to " + std::to_string(j);
+				wxMessageBox(output);
 				i = failure[i - 1];
 			}
-			else if (j < text.length() && text[j] != pattern[i])
+			else if (j < text.Length() && text[j] != pattern[i])
 			{
 				if (i == 0)
 				{
