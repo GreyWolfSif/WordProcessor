@@ -13,10 +13,12 @@ public:
     wxMenuBar* menuBar;
     wxMenu* fileMenu;
     wxMenu* helpMenu;
+    wxMenu* settingsMenu;
+    wxMenuItem* darkThemeMenuItem;
+    wxMenuItem* lightThemeMenuItem;
 
     //widgets
     wxTextCtrl* control;
-    wxButton* button;
 
     //sizer (alignes all the widgets)
     wxBoxSizer* sizer;
@@ -24,8 +26,10 @@ public:
     //events
     void OnOpenFile(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);
+    void OnFind(wxCommandEvent& event);
     void OnQuit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
+    void OnPersonalize(wxCommandEvent& event);
     void OnResize(wxSizeEvent& event);
     void OnButtonOK(wxCommandEvent& event);
     void OnKeyDown(wxKeyEvent& event);

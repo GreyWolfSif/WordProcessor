@@ -24,15 +24,12 @@
     <ClCompile Include="src\MyFrame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\MyTextCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\MyFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MyTextCtrl.h">
+    <ClInclude Include="src\Finder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

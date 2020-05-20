@@ -145,11 +145,10 @@
     <ClCompile Include="src\MyApp.cpp" />
     <ClCompile Include="src\MyApp.h" />
     <ClCompile Include="src\MyFrame.cpp" />
-    <ClCompile Include="src\MyTextCtrl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\MyFrame.h" />
-    <ClInclude Include="src\MyTextCtrl.h" />
+    <ClInclude Include="src\Finder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
