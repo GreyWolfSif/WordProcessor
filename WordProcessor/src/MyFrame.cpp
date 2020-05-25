@@ -3,24 +3,27 @@
 //The event lookup table
 BEGIN_EVENT_TABLE(MyFrame, wxFrame)
     EVT_MENU(wxID_OPEN, MyFrame::OnOpenFile)
-    EVT_MENU(wxID_SAVE, MyFrame::OnSaveAs)
+    EVT_MENU(wxID_SAVEAS, MyFrame::OnSaveAs)
+    EVT_MENU(wxID_SAVE, MyFrame::OnSave)
     EVT_MENU(wxID_FIND, MyFrame::OnFind)
-    EVT_MENU(wxID_EXIT, MyFrame::OnQuit)
+    EVT_MENU(wxID_EXIT, MyFrame::OnExit)
     EVT_MENU(wxID_ABOUT, MyFrame::OnAbout)
-    EVT_MENU(wxID_EDIT, MyFrame::OnPersonalize)
+    EVT_MENU(wxID_EDIT, MyFrame::OnSetDarkTheme)
     EVT_SIZE(MyFrame::OnSize)
-    EVT_CHAR(MyFrame::OnKeyDown)
 END_EVENT_TABLE()
 
 void InitializeMenu(wxMenu* fileMenu, wxMenu* helpMenu, wxMenu* settingsMenu, wxMenuBar* menuBar)
 {
     //appends menu option to the dropdown menu and connects event handlers
     fileMenu->Append(wxID_OPEN, "&Open\tCtrl-O", "Open file");
-    fileMenu->Append(wxID_SAVE, "&Save\tCtrl-S", "Save progress");
-    fileMenu->Append(wxID_FIND, "&Find\tCtrl-F", "Find...");
+    fileMenu->AppendSeparator();
+    fileMenu->Append(wxID_SAVEAS, "&Save As\tCtrl-S", "Save as new project");
+    fileMenu->Append(wxID_SAVE, "&Save\tCtrl-S", "Save project");
+    fileMenu->AppendSeparator();
     fileMenu->Append(wxID_EXIT, "&Exit", "Exit program");
-
-    helpMenu->Append(wxID_ABOUT, "&About\t", "Show about dialog");
+    
+    helpMenu->Append(wxID_FIND, "&Find\tCtrl-F", "Find...");
+    helpMenu->Append(wxID_ABOUT, "&Version Info\t", "Show about dialog");
 
     //places dropdown menus onto the menu bar
     menuBar->Append(fileMenu, "&File");
@@ -54,7 +57,7 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxPoint
 
     InitializeStatusBar(this);
 
-    control = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(600, 600), wxTE_MULTILINE);
+    control = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(300, 300), wxTE_MULTILINE);
 
     wxFont font(11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false);
     control->SetFont(font);
@@ -67,16 +70,11 @@ MyFrame::MyFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxPoint
     sizer->SetSizeHints(this);
 }
 
-MyFrame::~MyFrame()
-{
-    delete[] control;
-}
-
 //EVENT HANDLERS
 
-bool fileDialogIsOpen(MyFrame* frame, wxFileDialog* fileDialog)
+bool fileDialogIsOpen(MyFrame* frame, wxFileDialog& fileDialog)
 {
-    if (fileDialog->ShowModal() == wxID_CANCEL)
+    if (fileDialog.ShowModal() == wxID_CANCEL)
     {
         return false;
     }
@@ -85,14 +83,14 @@ bool fileDialogIsOpen(MyFrame* frame, wxFileDialog* fileDialog)
 
 void MyFrame::OnOpenFile(wxCommandEvent& event)
 {
-    wxFileDialog* fileDialog = new wxFileDialog(this, "Open File", wxEmptyString, wxEmptyString, "Text files (*.txt)|*.txt", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    wxFileDialog fileDialog(this, "Open File", wxEmptyString, wxEmptyString, "Text files (*.txt)|*.txt", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (fileDialogIsOpen(this, fileDialog))
     {
-        wxFileInputStream inputStream(fileDialog->GetPath());
+        wxFileInputStream inputStream(fileDialog.GetPath());
         wxTextInputStream textStream(inputStream, wxT("\x09"), wxConvUTF8);
         if (!inputStream.IsOk())
         {
-            wxLogError("Cannot open file '%s'.", fileDialog->GetPath());
+            wxLogError("Cannot open file '%s'.", fileDialog.GetPath());
             return;
         }
 
@@ -108,16 +106,21 @@ void MyFrame::OnOpenFile(wxCommandEvent& event)
 
 void MyFrame::OnSaveAs(wxCommandEvent& event)
 {
-    wxFileDialog* fileDialog = new wxFileDialog(this, "Save File", wxEmptyString, wxEmptyString, wxEmptyString, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    wxFileDialog fileDialog(this, "Save File", wxEmptyString, wxEmptyString, wxEmptyString, wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (fileDialogIsOpen(this, fileDialog))
     {
         //TODO
     }
 }
 
+void MyFrame::OnSave(wxCommandEvent& event)
+{
+    //TODO
+}
+
 void MyFrame::OnFind(wxCommandEvent& event)
 {
-    wxTextEntryDialog textEntryDialog(this, "Find");
+    wxTextEntryDialog textEntryDialog(this, "Find what: ", "Find");
     textEntryDialog.SetTextValidator(wxFILTER_ALPHA);
     if (textEntryDialog.ShowModal() == wxID_OK)
     {
@@ -133,9 +136,9 @@ void MyFrame::OnFind(wxCommandEvent& event)
     }
 }
 
-void MyFrame::OnQuit(wxCommandEvent& event)
+void MyFrame::OnExit(wxCommandEvent& event)
 {
-    wxExit();
+    Destroy();
 }
 
 void MyFrame::OnAbout(wxCommandEvent& event)
@@ -145,7 +148,7 @@ void MyFrame::OnAbout(wxCommandEvent& event)
     wxMessageBox(msg, wxT("About Minimal"), wxOK | wxICON_INFORMATION, this);
 }
 
-void MyFrame::OnPersonalize(wxCommandEvent& event)
+void MyFrame::OnSetDarkTheme(wxCommandEvent& event)
 {
     if (control->GetBackgroundColour() != *wxBLACK)
     {
@@ -161,8 +164,6 @@ void MyFrame::OnPersonalize(wxCommandEvent& event)
         settingsMenu->Remove(lightThemeMenuItem);
         settingsMenu->Append(darkThemeMenuItem);
     }
-    
-    //Updates text buffer
 
     //copy lines from control to a vector
     std::vector<wxString> lines;
@@ -187,21 +188,4 @@ void MyFrame::OnPersonalize(wxCommandEvent& event)
 }
 
 //Resizes the frame
-void MyFrame::OnResize(wxSizeEvent& event) {}
-
-//TODO
-void MyFrame::OnKeyDown(wxKeyEvent& event)
-{
-    if ((event.GetEventType() == wxEVT_KEY_DOWN) && (((wxKeyEvent&)event).GetKeyCode() == WXK_ESCAPE))
-    {
-        int answer = wxMessageBox("Quit program?", "Confirm", wxYES_NO);
-        if (answer == wxYES)
-        {
-            wxExit();
-        }
-    }
-    else
-    {
-        event.Skip();
-    }
-}
+void MyFrame::OnSize(wxSizeEvent& event) {}
